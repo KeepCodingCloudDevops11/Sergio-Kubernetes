@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: kuberkid
+  labels:
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mysql
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: mysql
+        tier: frontend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: minikube-m02
+      containers:
+      - name: mysql
+        image: mysql:5.7  # Recomendado usar una versión estable
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: usuario
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+
