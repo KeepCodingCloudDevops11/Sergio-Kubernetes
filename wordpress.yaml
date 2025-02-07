@@ -4,7 +4,7 @@ metadata:
   name: wordpress
   namespace: kuberkid
   labels:
-    tier: frontend 
+    tier: frontend
 spec:
   replicas: 2
   selector:
@@ -24,7 +24,7 @@ spec:
         image: wordpress
         env:
         - name: WORDPRESS_DB_HOST
-          value: mysql:3306  
+          value: mysql:3306
         - name: WORDPRESS_DB_NAME
           value: "wordpress_db"
         - name: WORDPRESS_DB_PASSWORD
@@ -37,7 +37,104 @@ spec:
             secretKeyRef:
               name: secret-wordpress
               key: username
+        livenessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 45
+          periodSeconds: 15
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 10
+        resources:
+          limits:
+            memory: 800Mi
+            cpu: 500m
+          requests:
+            memory: 600Mi
+            cpu: 200m
         ports:
         - containerPort: 80
+        volumeMounts:
+        - name: wordpress-volume
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-volume
+        persistentVolumeClaim:
+          claimName: pvc
 
-      
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress
+  namespace: kuberkid
+  labels:
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: wordpress
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: wordpress
+        tier: frontend
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: minikube
+      containers:
+      - name: wordpress
+        image: wordpress
+        env:
+        - name: WORDPRESS_DB_HOST
+          value: mysql:3306
+        - name: WORDPRESS_DB_NAME
+          value: "wordpress_db"
+        - name: WORDPRESS_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: secret-wordpress
+              key: password
+        - name: WORDPRESS_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: secret-wordpress
+              key: username
+        livenessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 5
+          initialDelaySeconds: 45
+          periodSeconds: 15
+          tcpSocket:
+            port: 80
+          timeoutSeconds: 10
+        resources:
+          limits:
+            memory: 800Mi
+            cpu: 500m
+          requests:
+            memory: 600Mi
+            cpu: 200m
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: wordpress-volume
+          mountPath: /var/www/html
+      volumes:
+      - name: wordpress-volume
+        persistentVolumeClaim:
+          claimName: pvc
+
