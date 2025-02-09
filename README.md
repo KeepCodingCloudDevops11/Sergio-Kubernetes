@@ -22,7 +22,7 @@ my-helm-chart/
 
 1. **Inicialización del Clúster**  
    Inicié Minikube con tres nodos, aunque durante el desarrollo comprobé que con dos nodos era suficiente.  
-   ![Minikube](https://github.com/KeepCodingCloudDevops11/Sergio-Kubernetes/blob/master/imagenes/Creaci%EF%BF%BDnMinikube.png?raw=true)
+   ![Minikube](https://github.com/KeepCodingCloudDevops11/Sergio-Kubernetes/blob/master/imagenes/CreaciponMinikube.png?raw=true)
 
 3. **Preparación del Entorno**  
    - Creé una carpeta para almacenar el proyecto.
