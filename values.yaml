@@ -1,0 +1,26 @@
+namespace: kuberkid
+
+mysql:
+  replicaCount: 2
+  image:
+    repository: mysql
+    tag: 5.7
+
+wordpress:
+  replicaCount: 2
+  image:
+    repository: wordpress
+    tag: latest
+  db:
+    name: wordpress_db
+
+persistence:
+  size: 10Gi
+  requestSize: 7Gi
+  path: "/volume/data"
+
+ingress:
+  host: wordpress.local
+
+pvc:
+  create: false

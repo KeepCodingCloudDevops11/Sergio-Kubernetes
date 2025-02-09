@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: kuberkid
+  labels:
+    tier: frontend
+    app.kubernetes.io/managed-by: Helm  # Etiqueta para que Helm lo gestione
+  annotations:
+    meta.helm.sh/release-name: mi-aplicacion  # Anotación para vincular con el release de Helm
+    meta.helm.sh/release-namespace: kuberkid  # Anotación para vincular con el namespace correcto
+  creationTimestamp: "2025-02-06T19:20:00Z"
+  generation: 4
+  resourceVersion: "41854"
+  uid: 1b55e749-b694-4f57-a2a0-a793f1b44bf8
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: mysql
+      tier: frontend
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/restartedAt: "2025-02-08T23:09:12+01:00"
+      labels:
+        app: mysql
+        tier: frontend
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        imagePullPolicy: Always
+        env:
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: usuario
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-secret
+              key: password
+        ports:
+        - containerPort: 3306
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/hostname: minikube-m02
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+status:
+  availableReplicas: 2
+  conditions:
+  - lastTransitionTime: "2025-02-06T19:20:00Z"
+    lastUpdateTime: "2025-02-08T22:09:16Z"
+    message: ReplicaSet "mysql-69b4cb9995" has successfully progressed.
+    reason: NewReplicaSetAvailable
+    status: "True"
+    type: Progressing
+  - lastTransitionTime: "2025-02-08T22:46:21Z"
+    lastUpdateTime: "2025-02-08T22:46:21Z"
+    message: Deployment has minimum availability.
+    reason: MinimumReplicasAvailable
+    status: "True"
+    type: Available
+  observedGeneration: 4
+  readyReplicas: 2
+  replicas: 2
+  updatedReplicas: 2
